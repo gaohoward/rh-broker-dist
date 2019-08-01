@@ -39,7 +39,7 @@ node ("messaging-ci-01.vm2") {
             See job for details: ${amq.absoluteUrl}
           """.stripIndent().trim()
           node {
-            emailext body: emailBody, subject: "AMQ Broker nightly prod build ${new Date().format('yyyy-MM-dd')}", to: 'amq-broker-agile@redhat.com'
+            emailext body: emailBody, subject: "AMQ Broker nightly prod build ${new Date().format('yyyy-MM-dd')}", to: 'hgao@redhat.com'
             throw new Exception("Production job failed. Cannot continue.")
           }
         }
@@ -59,9 +59,9 @@ node ("messaging-ci-01.vm2") {
         checkout scm
         sh "sh ./scripts/pushamq.sh $build_id $build_url $amq_broker_version $amq_broker_redhat_version"
     }
-    stage ("Send Email") {
+    stage ("Trigger image build") {
         build(
-        job: 'sendSuccessEmail',
+        job: 'amq-broker-73-container-image-build',
         parameters: [
             [ $class: 'StringParameterValue', name: 'AMQ_VERSION', value: '7.5' ],
             [ $class: 'StringParameterValue', name: 'BUILD_URL', value: build_url ],
@@ -70,6 +70,5 @@ node ("messaging-ci-01.vm2") {
         ],
         propagate: false
         )
-
     }
 }
