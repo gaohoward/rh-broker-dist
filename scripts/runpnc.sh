@@ -51,18 +51,27 @@ chmod 700 bin/activate
 export PATH=`pwd`/bin:$PATH
 activate
 
+echo "===== Checking pip version"
+pip --version
+
 # Install the PNC CLI
 pip install -r docker/root/requirements.txt
 pip install https://github.com/project-ncl/pnc-cli/archive/version-1.4.x.zip
 
 # Build (currently required as there is not official release) and Run the PFG tool
+echo "============= mvn building $PWD"
+
 cd core
 mvn clean install -DskipTests
 cd target
+
+echo "======== running pfg, config: $BUILD_CONFIG_PATH"
 java -Djavax.net.ssl.trustStore=/etc/pki/java/cacerts -jar product-files-generator.jar -c $BUILD_CONFIG_PATH --skipJavadoc --rebuildMode=FORCE $TEMPBUILDFLAG $SKIPLICENSES
 
 # Unpack maven repo and restructure directory to align with staging requirements
 cd target/amq-broker*
+echo "======== unzip under $PWD"
+ls
 unzip amq-broker-*-maven-repository.zip
 cp amq-broker-*-maven-repository/maven-repository/org/jboss/rh-messaging/amq/amq-broker/*/amq-broker-*-bin.* .
 
