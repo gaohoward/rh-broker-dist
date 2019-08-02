@@ -23,6 +23,8 @@ export GIT_SSL_NO_VERIFY=false
 export WORKING_DIR=`pwd`
 BUILD_CONFIG_PATH=../../../build-configurations/amq/broker/$BUILDCONFIG/
 
+echo "========== Starting PNC process ==========="
+
 echo "WORKING DIR: $WORKING_DIR"
 echo "Build Config path is $BUILD_CONFIG_PATH"
 ls
