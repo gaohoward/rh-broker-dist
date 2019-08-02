@@ -1,5 +1,6 @@
 import groovy.json.JsonSlurperClassic
 
+def builder = "AMQ7-Pipeline"
 def amqZipUrl
 def amq_broker_version
 def amq_broker_redhat_version
@@ -72,4 +73,19 @@ node ("messaging-ci-01.vm2") {
         )
 
     }
+    stage ("Start image build") {
+        build(
+        job: 'amq-broker-73-container-image-build',
+        parameters: [
+            [ $class: 'StringParameterValue', name: 'builder', value: builder ],
+            [ $class: 'StringParameterValue', name: 'AMQ_VERSION', value: '7.5' ],
+            [ $class: 'StringParameterValue', name: 'BUILD_URL', value: build_url ],
+            [ $class: 'StringParameterValue', name: 'amq_broker_version', value: amq_broker_version ],
+            [ $class: 'StringParameterValue', name: 'amq_broker_redhat_version', value: amq_broker_redhat_version ]
+        ],
+        propagate: false
+        )
+    }
+
+
 }
