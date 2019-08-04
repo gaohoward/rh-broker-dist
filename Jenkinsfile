@@ -57,10 +57,12 @@ node ("messaging-ci-01.vm2") {
         sh "echo amq_broker_version amq_broker_version"
     }
     stage ("Update Stagger") {
+        echo "====== Updating stagger"
         checkout scm
         sh "sh ./scripts/pushamq.sh $build_id $build_url $amq_broker_version $amq_broker_redhat_version"
     }
     stage ("Send Email") {
+        sh "echo ====== Sending mail"
         build(
         job: 'sendSuccessEmail',
         parameters: [
@@ -74,6 +76,7 @@ node ("messaging-ci-01.vm2") {
 
     }
     stage ("Start image build") {
+        sh "echo ====== Buidling image" 
         build(
         job: 'amq-broker-73-container-image-build',
         parameters: [
