@@ -78,7 +78,7 @@ node ("messaging-ci-01.vm2") {
 
     }
     stage ("Start image build") {
-        sh "echo ====== Buidling image" 
+        sh "echo ====== Buidling image, $builder, $BUILD_URL, $amq_broker_version, $amq_broker_redhat_version" 
         build(
         job: 'amq-broker-73-container-image-build',
         parameters: [
