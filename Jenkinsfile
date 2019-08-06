@@ -78,13 +78,13 @@ node ("messaging-ci-01.vm2") {
 
     }
     stage ("Start image build") {
-        sh "echo ====== Buidling image, $builder, $BUILD_URL, $amq_broker_version, $amq_broker_redhat_version" 
+        sh "echo ====== Buidling image, $builder, $build_url, $amq_broker_version, $amq_broker_redhat_version" 
         build(
         job: 'amq-broker-73-container-image-build',
         parameters: [
             [ $class: 'StringParameterValue', name: 'builder', value: builder ],
             [ $class: 'StringParameterValue', name: 'AMQ_VERSION', value: '7.5' ],
-            [ $class: 'StringParameterValue', name: 'BUILD_URL', value: build_url ],
+            [ $class: 'StringParameterValue', name: 'AMQ_BUILD_URL', value: build_url ],
             [ $class: 'StringParameterValue', name: 'BUILD_ID', value: build_id ],
             [ $class: 'StringParameterValue', name: 'amq_broker_version', value: amq_broker_version ],
             [ $class: 'StringParameterValue', name: 'amq_broker_redhat_version', value: amq_broker_redhat_version ]
