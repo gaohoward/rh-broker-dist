@@ -82,12 +82,10 @@ node ("messaging-ci-01.vm2") {
         build(
         job: 'amq-broker-73-container-image-build',
         parameters: [
-            [ $class: 'StringParameterValue', name: 'builder', value: builder ],
-            [ $class: 'StringParameterValue', name: 'AMQ_VERSION', value: '7.5' ],
+            [ $class: 'StringParameterValue', name: 'AMQ_VERSION', value: amq_broker_version ],
             [ $class: 'StringParameterValue', name: 'AMQ_BUILD_URL', value: build_url ],
-            [ $class: 'StringParameterValue', name: 'BUILD_ID', value: build_id ],
-            [ $class: 'StringParameterValue', name: 'amq_broker_version', value: amq_broker_version ],
-            [ $class: 'StringParameterValue', name: 'amq_broker_redhat_version', value: amq_broker_redhat_version ]
+            [ $class: 'StringParameterValue', name: 'AMQ_BUILD_ID', value: build_id ],
+            [ $class: 'StringParameterValue', name: 'AMQ_BROKER_REDHAT_VERSION', value: amq_broker_redhat_version ]
         ],
         propagate: false
         )
