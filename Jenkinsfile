@@ -1,5 +1,6 @@
 import groovy.json.JsonSlurperClassic
 
+def builder = "AMQ7-Pipeline"
 def amqZipUrl
 def amq_broker_version
 def amq_broker_redhat_version
@@ -39,27 +40,31 @@ node ("messaging-ci-01.vm2") {
             See job for details: ${amq.absoluteUrl}
           """.stripIndent().trim()
           node {
-            emailext body: emailBody, subject: "AMQ Broker nightly prod build ${new Date().format('yyyy-MM-dd')}", to: 'amq-broker-agile@redhat.com'
+            emailext body: emailBody, subject: "AMQ Broker nightly prod build ${new Date().format('yyyy-MM-dd')}", to: 'hgao@redhat.com'
             throw new Exception("Production job failed. Cannot continue.")
           }
         }
         sh "echo running"
         def amqVariables = amq.getBuildVariables();
         build_url = "${amqVariables.BUILD_URL}"
-        sh "echo $build_url"
+        sh "echo buildurl ==== $build_url"
         build_id = "${amqVariables.BUILD_ID}"
+        sh "echo buildid ==== $build_id"
         sh "rm -f repository-artifact-list.txt"
+        sh "echo get artifact from ${amq.absoluteUrl}"
         sh "wget ${amq.absoluteUrl}/artifact/amq-broker-7.5.0.ER1/extras/repository-artifact-list.txt"
         amq_broker_redhat_version = sh(script: "grep org.jboss.rh-messaging.amq:amq-broker: repository-artifact-list.txt|cut -d':' -f3", returnStdout: true)
-        sh "echo amq_broker_redhat_version $amq_broker_redhat_version"
+        sh "echo amq_broker_redhat_version [$amq_broker_redhat_version]"
         amq_broker_version = amq_broker_redhat_version.substring(0, amq_broker_redhat_version.indexOf('-'))
         sh "echo amq_broker_version amq_broker_version"
     }
     stage ("Update Stagger") {
+        echo "====== Updating stagger"
         checkout scm
         sh "sh ./scripts/pushamq.sh $build_id $build_url $amq_broker_version $amq_broker_redhat_version"
     }
     stage ("Send Email") {
+        sh "echo ====== Sending mail"
         build(
         job: 'sendSuccessEmail',
         parameters: [
@@ -72,4 +77,19 @@ node ("messaging-ci-01.vm2") {
         )
 
     }
+    stage ("Start image build") {
+        sh "echo ====== Buidling image, $builder, $build_url, $amq_broker_redhat_version, $amq_broker_version" 
+        build(
+        job: 'amq-broker-75-container-image-build',
+        parameters: [
+            [ $class: 'StringParameterValue', name: 'AMQ_VERSION', value: amq_broker_version ],
+            [ $class: 'StringParameterValue', name: 'AMQ_BUILD_URL', value: build_url ],
+            [ $class: 'StringParameterValue', name: 'AMQ_BUILD_ID', value: build_id ],
+            [ $class: 'StringParameterValue', name: 'AMQ_BROKER_REDHAT_VERSION', value: amq_broker_redhat_version ]
+        ],
+        propagate: false
+        )
+    }
+
+
 }
