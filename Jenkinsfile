@@ -26,7 +26,7 @@ node ("messaging-ci-01.vm2") {
     }
     stage('build amq 7.5') {
         def amq = build(
-        job: 'amq-pnc-build',
+        job: 'amq-75-pnc-build',
         parameters: [
             [ $class: 'StringParameterValue', name: 'BUILDCONFIG', value: '7.5' ],
             [ $class: 'StringParameterValue', name: 'TEMPBUILD', value: 'true' ]
