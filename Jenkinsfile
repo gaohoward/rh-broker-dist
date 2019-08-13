@@ -45,6 +45,7 @@ node ("messaging-ci-01.vm2") {
           }
         }
         sh "echo running"
+        sh "pwd"
         def amqVariables = amq.getBuildVariables();
         build_url = "${amqVariables.BUILD_URL}"
         sh "echo buildurl ==== $build_url"
